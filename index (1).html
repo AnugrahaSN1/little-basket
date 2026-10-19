@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Little Basket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Caveat:wght@500;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a gingham picnic blanket; on it an order card (your settings) and a lined notepad (your list), with a few ants passing by */
+:root {
+  --cloth: #F7F3EC;
+  --check: rgba(214, 64, 52, .22);
+  --check-2: rgba(214, 64, 52, .38);
+  --paper: #FFFDF6;
+  --line: #D9E5EE;
+  --margin: #F0A9A0;
+  --ink: #2A2420;
+  --ink-2: #6C625A;
+  --red: #C7362B;
+  --leaf: #3C8D4E;
+  --leaf-soft: #E3F1E4;
+  --honey: #F2B53A;
+  --card: #FFFFFF;
+  --shadow: 0 2px 0 rgba(42,36,32,.08), 0 18px 34px -18px rgba(42,36,32,.45);
+  --f-hand: "Caveat Brush", "Caveat", "Comic Sans MS", cursive;
+  --f-note: "Caveat", "Comic Sans MS", cursive;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --cloth: #16201B; --check: rgba(80, 160, 110, .16); --check-2: rgba(80, 160, 110, .28);
+  --paper: #23221E; --line: #34404A; --margin: #7A4540; --ink: #F2ECE4; --ink-2: #B9AFA5;
+  --red: #F07A6E; --leaf: #7DCB8D; --leaf-soft: #1E3325; --honey: #F2B53A; --card: #2A2925;
+  --shadow: 0 2px 0 rgba(0,0,0,.3), 0 18px 34px -18px rgba(0,0,0,.9); color-scheme: dark } }
+:root[data-theme="dark"] {
+  --cloth: #16201B; --check: rgba(80, 160, 110, .16); --check-2: rgba(80, 160, 110, .28);
+  --paper: #23221E; --line: #34404A; --margin: #7A4540; --ink: #F2ECE4; --ink-2: #B9AFA5;
+  --red: #F07A6E; --leaf: #7DCB8D; --leaf-soft: #1E3325; --honey: #F2B53A; --card: #2A2925;
+  --shadow: 0 2px 0 rgba(0,0,0,.3), 0 18px 34px -18px rgba(0,0,0,.9); color-scheme: dark }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.45;
+  background-color: var(--cloth);
+  background-image:
+    linear-gradient(90deg, var(--check) 50%, transparent 50%),
+    linear-gradient(var(--check) 50%, transparent 50%);
+  background-size: 56px 56px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--honey); outline-offset: 2px; border-radius: 6px; }
+
+header { text-align: center; margin-bottom: 26px; }
+.badge { display: inline-block; background: var(--card); padding: 18px 30px 14px; border-radius: 18px; box-shadow: var(--shadow); transform: rotate(-1.5deg); }
+h1 { font-family: var(--f-hand); font-weight: 400; font-size: clamp(52px, 9vw, 84px); line-height: .9; margin: 0; color: var(--red); }
+h1 span { color: var(--leaf); }
+.sub { font-family: var(--f-note); font-size: 24px; color: var(--ink-2); margin: 6px 0 0; }
+
+.flow { max-width: 680px; margin: 0 auto; }
+.order .q { font-size: 15px; font-weight: 700; margin: 0; font-family: var(--f-body); }
+.step + .step { border-top: 1.5px dashed var(--line); padding-top: 14px; }
+
+/* order card */
+.order { background: var(--card); border-radius: 16px; box-shadow: var(--shadow); padding: 22px; display: grid; gap: 18px; position: relative; }
+.order::before { content: ""; position: absolute; top: -12px; left: 50%; width: 96px; height: 26px; margin-left: -48px; background: color-mix(in srgb, var(--honey) 70%, transparent); transform: rotate(-3deg); border-radius: 3px; }
+.order h2 { font-family: var(--f-hand); font-weight: 400; font-size: 32px; margin: 0; line-height: 1; }
+.field { display: grid; gap: 8px; }
+.field > label, .field > .lbl { font-weight: 700; font-size: 14px; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--cloth); padding: 5px; border-radius: 14px; }
+.tabs button { border: 0; background: transparent; padding: 9px 4px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; display: grid; gap: 2px; justify-items: center; }
+.tabs button small { font-weight: 400; font-size: 11px; color: var(--ink-2); }
+.tabs button[aria-pressed="true"] { background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,.15); color: var(--red); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stepper { display: flex; align-items: center; border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; }
+.stepper button { border: 0; background: transparent; width: 40px; height: 42px; font-size: 22px; cursor: pointer; }
+.stepper button:hover { background: var(--cloth); }
+.stepper output { flex: 1; text-align: center; font-weight: 700; font-size: 18px; font-variant-numeric: tabular-nums; }
+.budget { display: flex; align-items: center; gap: 12px; }
+.budget input[type=range] { flex: 1; accent-color: var(--red); }
+.budget output { font-family: var(--f-hand); font-size: 30px; min-width: 76px; text-align: right; color: var(--red); }
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chips button { border: 1.5px dashed var(--ink-2); background: transparent; border-radius: 999px; padding: 5px 11px; font-size: 13px; cursor: pointer; }
+.chips button[aria-pressed="true"] { border-style: solid; border-color: var(--leaf); background: var(--leaf-soft); color: var(--leaf); font-weight: 600; }
+.skip { border: 2px solid var(--ink); border-radius: 12px; padding: 10px 12px; background: transparent; width: 100%; }
+.skip::placeholder { color: var(--ink-2); }
+.go { background: var(--red); color: #fff; border: 0; border-radius: 14px; padding: 14px; font-family: var(--f-hand); font-size: 26px; cursor: pointer; box-shadow: 0 4px 0 color-mix(in srgb, var(--red) 60%, #000); transition: transform .08s; }
+.go:active { transform: translateY(3px); box-shadow: 0 1px 0 color-mix(in srgb, var(--red) 60%, #000); }
+.order { padding: 24px 22px; gap: 14px; }
+.order h2 { font-size: clamp(34px, 5vw, 42px); }
+.progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.progress i { height: 6px; border-radius: 99px; background: var(--cloth); border: 1px solid var(--ink-2); }
+.progress i.on { background: var(--red); border-color: var(--red); }
+.stepno { margin: -8px 0 0; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+.step { display: grid; gap: 10px; }
+.tabs.big { grid-template-columns: minmax(0, 1fr); gap: 10px; background: transparent; padding: 0; }
+.tabs.big button { border: 2px solid var(--ink); justify-items: start; text-align: left; padding: 14px 16px; border-radius: 14px; }
+.tabs.big b { font-family: var(--f-hand); font-weight: 400; font-size: 26px; line-height: 1; }
+.tabs.big small { font-size: 14px; }
+.tabs.big button[aria-pressed="true"] { border-color: var(--red); background: color-mix(in srgb, var(--red) 8%, var(--card)); }
+.hint { margin: 0; font-family: var(--f-note); font-size: 20px; color: var(--ink-2); line-height: 1.1; }
+.nav { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; }
+.back { border: 2px solid var(--ink); background: transparent; border-radius: 14px; padding: 0 20px; font-weight: 600; cursor: pointer; }
+.back[hidden] { display: none; }
+.nav .go { grid-column: 2; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.actions button { border: 2px solid var(--ink); background: var(--card); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.actions button.primary { background: var(--red); border-color: var(--red); color: #fff; }
+.unused { border: 2px solid var(--ink); background: transparent; border-radius: 12px; padding: 8px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.tweaks button:hover { background: var(--cloth); }
+
+/* notepad */
+.pad { background: var(--paper); border-radius: 6px 6px 16px 16px; box-shadow: var(--shadow); position: relative; padding: 34px 26px 28px 62px; min-width: 0;
+  background-image: linear-gradient(transparent 31px, var(--line) 31px, var(--line) 32px); background-size: 100% 32px; background-position: 0 14px; }
+.pad::before { content: ""; position: absolute; top: 0; bottom: 0; left: 44px; border-left: 2px solid var(--margin); }
+.pad::after { content: ""; position: absolute; top: -10px; left: 24px; right: 24px; height: 20px;
+  background: radial-gradient(circle at 10px 10px, var(--cloth) 5px, transparent 6px) 0 0 / 34px 20px repeat-x; }
+.pad-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.pad h2 { font-family: var(--f-hand); font-weight: 400; font-size: clamp(34px, 5vw, 44px); line-height: 1; margin: 0; }
+.meta { font-family: var(--f-note); font-size: 22px; color: var(--ink-2); line-height: 1; margin-top: 6px; }
+.copy { border: 2px solid var(--ink); background: var(--card); border-radius: 999px; padding: 6px 14px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.jar { margin: 18px 0 6px; display: grid; gap: 6px; }
+.jar-bar { height: 16px; border-radius: 999px; background: color-mix(in srgb, var(--honey) 20%, transparent); border: 2px solid var(--ink); overflow: hidden; }
+.jar-bar i { display: block; height: 100%; background: repeating-linear-gradient(-45deg, var(--honey) 0 8px, color-mix(in srgb, var(--honey) 75%, #fff) 8px 14px); transition: width .5s ease; }
+.jar-txt { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); gap: 10px; flex-wrap: wrap; }
+.jar-txt b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.aisle { font-family: var(--f-hand); font-size: 26px; color: var(--leaf); margin: 18px 0 2px; line-height: 32px; }
+.items { list-style: none; margin: 0; padding: 0; }
+.items li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; min-height: 32px; }
+.items input { width: 18px; height: 18px; accent-color: var(--leaf); margin: 0; cursor: pointer; }
+.items label { cursor: pointer; font-size: 15px; min-width: 0; }
+.items .q { font-family: var(--f-note); font-size: 22px; color: var(--red); margin-right: 4px; }
+.items .price { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--ink-2); white-space: nowrap; }
+.items li.done label { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 2px; color: var(--ink-2); }
+.notes { margin-top: 18px; font-size: 13px; color: var(--ink-2); display: grid; gap: 4px; }
+.empty { font-family: var(--f-note); font-size: 26px; color: var(--ink-2); padding: 20px 0; line-height: 32px; }
+
+/* meal cards */
+.meals { display: grid; gap: 18px; margin-top: 16px; }
+.meal { background: var(--card); border-radius: 12px; padding: 16px 18px; box-shadow: 0 1px 0 rgba(0,0,0,.06), 0 8px 18px -12px rgba(0,0,0,.4); border-top: 6px solid var(--red); }
+.meal:nth-child(2) { border-top-color: var(--leaf); transform: rotate(.4deg); }
+.meal:nth-child(3) { border-top-color: var(--honey); transform: rotate(-.4deg); }
+.meal h3 { font-family: var(--f-hand); font-weight: 400; font-size: 28px; margin: 0 0 4px; line-height: 1.05; }
+.meal .items li { min-height: 28px; }
+.meal .tot { display: flex; justify-content: space-between; border-top: 1.5px dashed var(--ink-2); margin-top: 8px; padding-top: 6px; font-weight: 700; }
+
+/* ants */
+.ants { position: fixed; left: 0; right: 0; bottom: calc(6px + env(safe-area-inset-bottom, 0px)); height: 14px; pointer-events: none; overflow: hidden; }
+.ants span { position: absolute; bottom: 0; width: 14px; height: 8px; animation: walk 38s linear infinite; }
+.ants span::before { content: ""; position: absolute; inset: 0; background:
+  radial-gradient(circle at 2px 4px, var(--ink) 2px, transparent 2.5px),
+  radial-gradient(circle at 7px 4px, var(--ink) 2.4px, transparent 2.9px),
+  radial-gradient(circle at 12px 4px, var(--ink) 2px, transparent 2.5px); }
+.ants span:nth-child(2) { animation-delay: -4s; } .ants span:nth-child(3) { animation-delay: -8s; }
+.ants span:nth-child(4) { animation-delay: -21s; } .ants span:nth-child(5) { animation-delay: -24s; }
+@keyframes walk { from { left: -20px; } to { left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .ants { display: none; } .jar-bar i { transition: none; } }
+.toast { position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="badge">
+      <h1>Little <span>Basket</span></h1>
+      <p class="sub">tell me who's eating, I'll write the list</p>
+    </div>
+  </header>
+
+  <div class="flow">
+    <form class="order" id="form" aria-label="Your preferences">
+      <h2>Tell me about your shop</h2>
+
+      <div class="step">
+        <h3 class="q">What are we shopping for?</h3>
+        <div class="tabs" role="group" aria-label="List type">
+          <button type="button" data-mode="week" aria-pressed="true">The week<small>full shop</small></button>
+          <button type="button" data-mode="picnic" aria-pressed="false">A picnic<small>no cooking</small></button>
+          <button type="button" data-mode="meals" aria-pressed="false">Dinner<small>3 ideas</small></button>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3 class="q">Who's eating?</h3>
+        <div class="row2">
+          <div class="field">
+            <span class="lbl" id="ppl-l">People</span>
+            <div class="stepper" aria-labelledby="ppl-l">
+              <button type="button" data-step="people" data-d="-1" aria-label="Fewer people">−</button>
+              <output id="people">2</output>
+              <button type="button" data-step="people" data-d="1" aria-label="More people">+</button>
+            </div>
+          </div>
+          <div class="field" id="days-f">
+            <span class="lbl" id="days-l">For how many days</span>
+            <div class="stepper" aria-labelledby="days-l">
+              <button type="button" data-step="days" data-d="-1" aria-label="Fewer days">−</button>
+              <output id="days">7</output>
+              <button type="button" data-step="days" data-d="1" aria-label="More days">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h3 class="q">What's the budget?</h3>
+        <div class="budget"><input id="budget" type="range" min="5" max="250" step="1" value="60" aria-label="Budget in euros"><output id="budget-o">€60</output></div>
+        <p class="hint" id="budget-hint"></p>
+      </div>
+
+      <div class="step">
+        <h3 class="q">Any food needs?</h3>
+        <div class="chips" id="diets">
+          <button type="button" data-d="vegetarian" aria-pressed="false">Vegetarian</button>
+          <button type="button" data-d="vegan" aria-pressed="false">Vegan</button>
+          <button type="button" data-d="pescatarian" aria-pressed="false">Pescatarian</button>
+          <button type="button" data-d="gluten" aria-pressed="false">Gluten-free</button>
+          <button type="button" data-d="dairy" aria-pressed="false">Dairy-free</button>
+          <button type="button" data-d="nuts" aria-pressed="false">Nut-free</button>
+          <button type="button" data-d="pork" aria-pressed="false">No pork</button>
+          <button type="button" data-d="protein" aria-pressed="false">High protein</button>
+        </div>
+        <div class="field">
+          <label for="skip">Anything to leave out?</label>
+          <input id="skip" class="skip" placeholder="e.g. mushrooms, tuna, olives" autocomplete="off">
+        </div>
+      </div>
+      <button type="submit" class="go">Write my list</button>
+
+    </form>
+
+    <section class="pad" aria-live="polite" id="pad" hidden></section>
+  </div>
+</div>
+<div class="ants" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const CATALOGUE = [{"id":"SU001","n":"Bananas 1kg","c":"Fruits & Vegetables","s":"Fruits","p":1.79,"t":["vegetarian","vegan"],"pr":1.1},{"id":"SU002","n":"Gala apples 1.5kg","c":"Fruits & Vegetables","s":"Fruits","p":2.99,"t":["vegetarian","vegan"],"pr":0.3},{"id":"SU003","n":"Juicing oranges 2kg","c":"Fruits & Vegetables","s":"Fruits","p":3.49,"t":["vegetarian","vegan"],"pr":0.9},{"id":"SU004","n":"Clementines 1kg","c":"Fruits & Vegetables","s":"Fruits","p":2.79,"t":["vegetarian","vegan"],"pr":0.8},{"id":"SU005","n":"Conference pears 1kg","c":"Fruits & Vegetables","s":"Fruits","p":2.69,"t":["vegetarian","vegan"],"pr":0.4},{"id":"SU006","n":"Organic kiwis x6","c":"Fruits & Vegetables","s":"Fruits","p":2.99,"t":["vegetarian","vegan","bio"],"pr":1.1},{"id":"SU007","n":"White grapes 500g","c":"Fruits & Vegetables","s":"Fruits","p":2.49,"t":["vegetarian","vegan"],"pr":0.7},{"id":"SU008","n":"Organic lemons 500g","c":"Fruits & Vegetables","s":"Fruits","p":1.99,"t":["vegetarian","vegan","bio"],"pr":1.1},{"id":"SU009","n":"Avocados x2","c":"Fruits & Vegetables","s":"Fruits","p":1.99,"t":["vegetarian","vegan"],"pr":2.0},{"id":"SU010","n":"Strawberries 250g","c":"Fruits & Vegetables","s":"Fruits","p":2.99,"t":["vegetarian","vegan"],"pr":0.7},{"id":"SU011","n":"Apples 2kg (value pack)","c":"Fruits & Vegetables","s":"Fruits","p":2.49,"t":["vegetarian","vegan"],"pr":0.3},{"id":"SU012","n":"Carrots 1kg","c":"Fruits & Vegetables","s":"Vegetables","p":1.19,"t":["vegetarian","vegan"],"pr":0.9},{"id":"SU013","n":"Vine tomatoes 500g","c":"Fruits & Vegetables","s":"Vegetables","p":1.99,"t":["vegetarian","vegan"],"pr":0.9},{"id":"SU014","n":"Cucumber","c":"Fruits & Vegetables","s":"Vegetables","p":0.89,"t":["vegetarian","vegan"],"pr":0.7},{"id":"SU015","n":"Iceberg lettuce","c":"Fruits & Vegetables","s":"Vegetables","p":1.09,"t":["vegetarian","vegan"],"pr":0.9},{"id":"SU016","n":"Courgettes 1kg","c":"Fruits & Vegetables","s":"Vegetables","p":2.29,"t":["vegetarian","vegan"],"pr":1.2},{"id":"SU017","n":"Broccoli 500g","c":"Fruits & Vegetables","s":"Vegetables","p":1.79,"t":["vegetarian","vegan"],"pr":2.8},{"id":"SU018","n":"Mixed peppers x3","c":"Fruits & Vegetables","s":"Vegetables","p":2.49,"t":["vegetarian","vegan"],"pr":1.0},{"id":"SU019","n":"Mushrooms 500g","c":"Fruits & Vegetables","s":"Vegetables","p":1.99,"t":["vegetarian","vegan"],"pr":3.1},{"id":"SU020","n":"Brown onions 1kg","c":"Fruits & Vegetables","s":"Vegetables","p":1.29,"t":["vegetarian","vegan"],"pr":1.1},{"id":"SU021","n":"Potatoes 2.5kg","c":"Fruits & Vegetables","s":"Vegetables","p":2.99,"t":["vegetarian","vegan"],"pr":2.0},{"id":"SU022","n":"Fresh spinach 400g","c":"Fruits & Vegetables","s":"Vegetables","p":2.29,"t":["vegetarian","vegan"],"pr":2.9},{"id":"SU023","n":"Aubergine","c":"Fruits & Vegetables","s":"Vegetables","p":0.99,"t":["vegetarian","vegan"],"pr":1.0},{"id":"SU024","n":"Organic cherry tomatoes 250g","c":"Fruits & Vegetables","s":"Vegetables","p":2.19,"t":["vegetarian","vegan","bio"],"pr":0.9},{"id":"SU025","n":"Grated carrots 500g","c":"Fruits & Vegetables","s":"Vegetables","p":1.49,"t":["vegetarian","vegan"],"pr":0.9},{"id":"SU026","n":"Lamb's lettuce 150g","c":"Fruits & Vegetables","s":"Vegetables","p":1.59,"t":["vegetarian","vegan"],"pr":2.0},{"id":"SU027","n":"Sweet potatoes 1kg","c":"Fruits & Vegetables","s":"Vegetables","p":2.49,"t":["vegetarian","vegan"],"pr":1.6},{"id":"SU028","n":"Cauliflower","c":"Fruits & Vegetables","s":"Vegetables","p":1.99,"t":["vegetarian","vegan"],"pr":1.9},{"id":"SU029","n":"Garlic 250g","c":"Fruits & Vegetables","s":"Vegetables","p":1.49,"t":["vegetarian","vegan"],"pr":6.4},{"id":"SU030","n":"Mixed salad 250g","c":"Fruits & Vegetables","s":"Vegetables","p":0.99,"t":["vegetarian","vegan"],"pr":1.4},{"id":"SU031","n":"Chicken breast fillets 500g","c":"Meat & Fish","s":"Poultry","p":6.49,"t":["high protein"],"pr":23.0},{"id":"SU032","n":"Chicken thighs 1kg","c":"Meat & Fish","s":"Poultry","p":4.99,"t":["high protein"],"pr":18.0},{"id":"SU033","n":"Turkey escalopes 500g","c":"Meat & Fish","s":"Poultry","p":5.99,"t":["high protein"],"pr":24.0},{"id":"SU034","n":"Chicken breast fillets 1kg (value pack)","c":"Meat & Fish","s":"Poultry","p":9.99,"t":["high protein"],"pr":23.0},{"id":"SU035","n":"Organic whole chicken 1.4kg","c":"Meat & Fish","s":"Poultry","p":12.9,"t":["high protein","bio"],"pr":19.0},{"id":"SU036","n":"Chicken strips 400g","c":"Meat & Fish","s":"Poultry","p":5.49,"t":["high protein"],"pr":23.0},{"id":"SU037","n":"Lean beef burgers 5% x4","c":"Meat & Fish","s":"Beef","p":4.99,"t":["high protein"],"pr":21.0},{"id":"SU038","n":"Beef burgers 15% x10 (value pack)","c":"Meat & Fish","s":"Beef","p":7.49,"t":["high protein"],"pr":18.0},{"id":"SU039","n":"Beef stewing meat 600g","c":"Meat & Fish","s":"Beef","p":8.49,"t":["high protein"],"pr":21.0},{"id":"SU040","n":"Rump steak 300g","c":"Meat & Fish","s":"Beef","p":7.99,"t":["high protein"],"pr":22.0},{"id":"SU041","n":"Organic minced beef 350g","c":"Meat & Fish","s":"Beef","p":5.99,"t":["high protein","bio"],"pr":19.0},{"id":"SU042","n":"Cooked ham x4 slices","c":"Meat & Fish","s":"Pork","p":2.29,"t":["high protein"],"pr":20.0},{"id":"SU043","n":"Smoked bacon lardons 200g","c":"Meat & Fish","s":"Pork","p":1.89,"t":[],"pr":15.0},{"id":"SU044","n":"Toulouse sausages x6","c":"Meat & Fish","s":"Pork","p":4.29,"t":[],"pr":15.0},{"id":"SU045","n":"Pork chops 500g","c":"Meat & Fish","s":"Pork","p":4.99,"t":["high protein"],"pr":20.0},{"id":"SU046","n":"Cooked ham x8 slices (value pack)","c":"Meat & Fish","s":"Pork","p":2.99,"t":[],"pr":18.0},{"id":"SU047","n":"Salmon fillets x2","c":"Meat & Fish","s":"Fish","p":6.99,"t":["high protein"],"pr":20.0},{"id":"SU048","n":"Pollock fillets 400g","c":"Meat & Fish","s":"Fish","p":5.49,"t":["high protein"],"pr":17.0},{"id":"SU049","n":"Cod fillets 400g","c":"Meat & Fish","s":"Fish","p":7.49,"t":["high protein"],"pr":18.0},{"id":"SU050","n":"Smoked salmon 4 slices","c":"Meat & Fish","s":"Fish","p":4.49,"t":["high protein"],"pr":22.0},{"id":"SU051","n":"Pollock fillets 1kg (value pack)","c":"Meat & Fish","s":"Fish","p":8.99,"t":["high protein"],"pr":17.0},{"id":"SU052","n":"Cooked prawns 300g","c":"Meat & Fish","s":"Seafood","p":5.99,"t":["high protein"],"pr":18.0},{"id":"SU053","n":"Mussels 1kg","c":"Meat & Fish","s":"Seafood","p":4.49,"t":["high protein"],"pr":12.0},{"id":"SU054","n":"Frozen peeled prawns 400g","c":"Meat & Fish","s":"Seafood","p":6.49,"t":["high protein"],"pr":18.0},{"id":"SU055","n":"Semi-skimmed milk 1L","c":"Dairy & Eggs","s":"Milk","p":0.99,"t":["vegetarian"],"pr":3.3},{"id":"SU056","n":"Semi-skimmed milk 6x1L","c":"Dairy & Eggs","s":"Milk","p":4.99,"t":["vegetarian"],"pr":3.3},{"id":"SU057","n":"Organic whole milk 1L","c":"Dairy & Eggs","s":"Milk","p":1.39,"t":["vegetarian","bio"],"pr":3.2},{"id":"SU058","n":"Plain yoghurts x8","c":"Dairy & Eggs","s":"Yogurt","p":1.49,"t":["vegetarian"],"pr":4.0},{"id":"SU059","n":"Plain skyr 450g","c":"Dairy & Eggs","s":"Yogurt","p":1.99,"t":["vegetarian","high protein"],"pr":10.0},{"id":"SU060","n":"Fat-free fromage frais 1kg","c":"Dairy & Eggs","s":"Yogurt","p":1.99,"t":["vegetarian","high protein"],"pr":7.5},{"id":"SU061","n":"Fruit yoghurts x8","c":"Dairy & Eggs","s":"Yogurt","p":2.29,"t":["vegetarian"],"pr":3.2},{"id":"SU062","n":"Greek yoghurts x4","c":"Dairy & Eggs","s":"Yogurt","p":1.99,"t":["vegetarian"],"pr":5.0},{"id":"SU063","n":"Plain yoghurts x16 (value pack)","c":"Dairy & Eggs","s":"Yogurt","p":1.99,"t":["vegetarian"],"pr":4.0},{"id":"SU064","n":"Grated Emmental 200g","c":"Dairy & Eggs","s":"Cheese","p":2.19,"t":["vegetarian","high protein"],"pr":28.0},{"id":"SU065","n":"Comté cheese 250g","c":"Dairy & Eggs","s":"Cheese","p":4.99,"t":["vegetarian","high protein"],"pr":27.0},{"id":"SU066","n":"Mozzarella 125g","c":"Dairy & Eggs","s":"Cheese","p":0.99,"t":["vegetarian"],"pr":18.0},{"id":"SU067","n":"Feta 200g","c":"Dairy & Eggs","s":"Cheese","p":2.49,"t":["vegetarian"],"pr":16.0},{"id":"SU068","n":"Camembert 250g","c":"Dairy & Eggs","s":"Cheese","p":1.79,"t":["vegetarian"],"pr":20.0},{"id":"SU069","n":"Goat's cheese log 180g","c":"Dairy & Eggs","s":"Cheese","p":2.29,"t":["vegetarian"],"pr":20.0},{"id":"SU070","n":"Parmesan 150g","c":"Dairy & Eggs","s":"Cheese","p":3.49,"t":["vegetarian","high protein"],"pr":32.0},{"id":"SU071","n":"Free-range eggs x12","c":"Dairy & Eggs","s":"Eggs","p":3.79,"t":["vegetarian","high protein"],"pr":13.0},{"id":"SU072","n":"Eggs x20 (value pack)","c":"Dairy & Eggs","s":"Eggs","p":4.49,"t":["vegetarian","high protein"],"pr":13.0},{"id":"SU073","n":"Organic eggs x6","c":"Dairy & Eggs","s":"Eggs","p":2.69,"t":["vegetarian","high protein","bio"],"pr":13.0},{"id":"SU074","n":"Unsalted butter 250g","c":"Dairy & Eggs","s":"Butter & Cream","p":2.39,"t":["vegetarian"],"pr":0.7},{"id":"SU075","n":"Crème fraîche 20cl","c":"Dairy & Eggs","s":"Butter & Cream","p":1.19,"t":["vegetarian"],"pr":2.4},{"id":"SU076","n":"Organic plain tofu 400g","c":"Plant Protein","s":"Tofu","p":2.79,"t":["vegetarian","vegan","high protein","bio"],"pr":13.0},{"id":"SU077","n":"Smoked tofu 200g","c":"Plant Protein","s":"Tofu","p":2.29,"t":["vegetarian","vegan","high protein"],"pr":15.0},{"id":"SU078","n":"Curry tofu 200g","c":"Plant Protein","s":"Tofu","p":2.39,"t":["vegetarian","vegan","high protein"],"pr":13.0},{"id":"SU079","n":"Chickpeas 400g tin","c":"Plant Protein","s":"Legumes","p":0.89,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU080","n":"Green lentils 500g","c":"Plant Protein","s":"Legumes","p":1.69,"t":["vegetarian","vegan","high protein"],"pr":24.0},{"id":"SU081","n":"Ready-cooked lentils 400g","c":"Plant Protein","s":"Legumes","p":1.49,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU082","n":"Red kidney beans 400g tin","c":"Plant Protein","s":"Legumes","p":0.85,"t":["vegetarian","vegan"],"pr":8.0},{"id":"SU083","n":"Organic red lentils 500g","c":"Plant Protein","s":"Legumes","p":2.29,"t":["vegetarian","vegan","high protein","bio"],"pr":24.0},{"id":"SU084","n":"Chickpeas 800g tin","c":"Plant Protein","s":"Legumes","p":1.19,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU085","n":"Veggie burgers x2","c":"Plant Protein","s":"Meat Alternatives","p":2.99,"t":["vegetarian","vegan","high protein"],"pr":16.0},{"id":"SU086","n":"Veggie nuggets 200g","c":"Plant Protein","s":"Meat Alternatives","p":2.79,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU087","n":"Plant-based mince 300g","c":"Plant Protein","s":"Meat Alternatives","p":3.49,"t":["vegetarian","vegan","high protein"],"pr":17.0},{"id":"SU088","n":"Organic seitan 250g","c":"Plant Protein","s":"Meat Alternatives","p":2.99,"t":["vegetarian","vegan","high protein","bio"],"pr":25.0},{"id":"SU089","n":"Spaghetti 500g","c":"Pantry","s":"Pasta","p":0.89,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU090","n":"Penne 500g","c":"Pantry","s":"Pasta","p":0.89,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU091","n":"Macaroni 1kg","c":"Pantry","s":"Pasta","p":0.99,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU092","n":"Organic wholewheat pasta 500g","c":"Pantry","s":"Pasta","p":1.49,"t":["vegetarian","vegan","bio"],"pr":13.0},{"id":"SU093","n":"Egg tagliatelle 500g","c":"Pantry","s":"Pasta","p":1.79,"t":["vegetarian"],"pr":14.0},{"id":"SU094","n":"Gluten-free spaghetti 400g","c":"Pantry","s":"Pasta","p":2.19,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU095","n":"Long-grain rice 1kg","c":"Pantry","s":"Rice","p":1.49,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU096","n":"Basmati rice 1kg","c":"Pantry","s":"Rice","p":2.49,"t":["vegetarian","vegan"],"pr":8.0},{"id":"SU097","n":"Organic brown rice 500g","c":"Pantry","s":"Rice","p":1.89,"t":["vegetarian","vegan","bio"],"pr":8.0},{"id":"SU098","n":"Long-grain rice 2kg","c":"Pantry","s":"Rice","p":2.29,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU099","n":"Quinoa 400g","c":"Pantry","s":"Grains","p":2.99,"t":["vegetarian","vegan","high protein"],"pr":14.0},{"id":"SU100","n":"Couscous 1kg","c":"Pantry","s":"Grains","p":1.69,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU101","n":"Bulgur wheat 500g","c":"Pantry","s":"Grains","p":1.49,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU102","n":"Fine semolina 1kg","c":"Pantry","s":"Grains","p":1.09,"t":["vegetarian","vegan"],"pr":12.0},{"id":"SU103","n":"Egg noodles 250g","c":"Pantry","s":"Noodles","p":1.29,"t":["vegetarian","vegan"],"pr":11.0},{"id":"SU104","n":"Rice noodles 400g","c":"Pantry","s":"Noodles","p":1.99,"t":["vegetarian","vegan"],"pr":6.0},{"id":"SU105","n":"Rolled oats 500g","c":"Pantry","s":"Breakfast","p":1.29,"t":["vegetarian","vegan"],"pr":13.0},{"id":"SU106","n":"Fruit muesli 750g","c":"Pantry","s":"Breakfast","p":2.49,"t":["vegetarian"],"pr":9.0},{"id":"SU107","n":"Cornflakes 500g","c":"Pantry","s":"Breakfast","p":1.69,"t":["vegetarian","vegan"],"pr":7.0},{"id":"SU108","n":"Chocolate spread 400g","c":"Pantry","s":"Breakfast","p":2.29,"t":["vegetarian"],"pr":6.0},{"id":"SU109","n":"Strawberry jam 370g","c":"Pantry","s":"Breakfast","p":1.79,"t":["vegetarian","vegan"],"pr":0.5},{"id":"SU110","n":"Ground coffee 250g","c":"Pantry","s":"Breakfast","p":2.79,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU111","n":"Passata 500g","c":"Pantry","s":"Sauces","p":0.79,"t":["vegetarian","vegan"],"pr":1.5},{"id":"SU112","n":"Tomato and basil sauce 400g","c":"Pantry","s":"Sauces","p":1.29,"t":["vegetarian","vegan"],"pr":1.6},{"id":"SU113","n":"Green pesto 190g","c":"Pantry","s":"Sauces","p":2.19,"t":["vegetarian"],"pr":5.0},{"id":"SU114","n":"Soy sauce 250ml","c":"Pantry","s":"Sauces","p":1.49,"t":["vegetarian","vegan"],"pr":8.0},{"id":"SU115","n":"Mayonnaise 235g","c":"Pantry","s":"Sauces","p":1.39,"t":["vegetarian"],"pr":1.0},{"id":"SU116","n":"Ketchup 560g","c":"Pantry","s":"Sauces","p":1.59,"t":["vegetarian","vegan"],"pr":1.0},{"id":"SU117","n":"Chopped tomatoes 400g tin","c":"Pantry","s":"Canned Vegetables","p":0.89,"t":["vegetarian","vegan"],"pr":1.0},{"id":"SU118","n":"Sweetcorn 300g tin","c":"Pantry","s":"Canned Vegetables","p":0.99,"t":["vegetarian","vegan"],"pr":3.0},{"id":"SU119","n":"Peas and carrots 400g tin","c":"Pantry","s":"Canned Vegetables","p":1.19,"t":["vegetarian","vegan"],"pr":4.0},{"id":"SU120","n":"Ratatouille 375g","c":"Pantry","s":"Canned Vegetables","p":1.99,"t":["vegetarian","vegan"],"pr":1.2},{"id":"SU121","n":"Green beans 400g tin","c":"Pantry","s":"Canned Vegetables","p":1.09,"t":["vegetarian","vegan"],"pr":1.8},{"id":"SU122","n":"Tuna in water 3x80g","c":"Pantry","s":"Canned Fish","p":3.49,"t":["high protein"],"pr":25.0},{"id":"SU123","n":"Sardines in oil 135g","c":"Pantry","s":"Canned Fish","p":1.49,"t":["high protein"],"pr":24.0},{"id":"SU124","n":"Mackerel in tomato 176g","c":"Pantry","s":"Canned Fish","p":1.99,"t":["high protein"],"pr":15.0},{"id":"SU125","n":"Tuna 4x70g","c":"Pantry","s":"Canned Fish","p":3.99,"t":["high protein"],"pr":25.0},{"id":"SU126","n":"Coconut milk 400ml","c":"Pantry","s":"Cooking","p":1.49,"t":["vegetarian","vegan"],"pr":1.5},{"id":"SU127","n":"Extra virgin olive oil 1L","c":"Pantry","s":"Cooking","p":8.99,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU128","n":"Sunflower oil 1L","c":"Pantry","s":"Cooking","p":2.49,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU129","n":"Plain flour 1kg","c":"Pantry","s":"Cooking","p":0.89,"t":["vegetarian","vegan"],"pr":10.0},{"id":"SU130","n":"Caster sugar 1kg","c":"Pantry","s":"Cooking","p":1.29,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU131","n":"Vegetable stock cubes x10","c":"Pantry","s":"Cooking","p":1.19,"t":["vegetarian","vegan"],"pr":1.0},{"id":"SU132","n":"Roasted peanuts 200g","c":"Pantry","s":"Cooking","p":1.79,"t":["vegetarian","vegan","high protein"],"pr":25.0},{"id":"SU133","n":"Almonds 200g","c":"Pantry","s":"Cooking","p":3.49,"t":["vegetarian","vegan","high protein"],"pr":21.0},{"id":"SU134","n":"Baguette","c":"Bakery","s":"Bread","p":1.1,"t":["vegetarian","vegan"],"pr":9.0},{"id":"SU135","n":"Wholemeal sandwich bread 500g","c":"Bakery","s":"Bread","p":1.69,"t":["vegetarian","vegan"],"pr":9.0},{"id":"SU136","n":"White sandwich bread 500g","c":"Bakery","s":"Bread","p":0.99,"t":["vegetarian"],"pr":8.0},{"id":"SU137","n":"Plain wraps x6","c":"Bakery","s":"Bread","p":1.99,"t":["vegetarian","vegan"],"pr":8.0},{"id":"SU138","n":"Multigrain loaf 400g","c":"Bakery","s":"Bread","p":1.89,"t":["vegetarian","vegan"],"pr":10.0},{"id":"SU139","n":"Croissants x6","c":"Bakery","s":"Pastries","p":2.49,"t":["vegetarian"],"pr":8.0},{"id":"SU140","n":"Sliced brioche 500g","c":"Bakery","s":"Pastries","p":2.19,"t":["vegetarian"],"pr":8.0},{"id":"SU141","n":"Crispbreads x36","c":"Bakery","s":"Pastries","p":1.29,"t":["vegetarian","vegan"],"pr":11.0},{"id":"SU142","n":"Frozen fine green beans 1kg","c":"Frozen","s":"Vegetables","p":2.29,"t":["vegetarian","vegan"],"pr":1.8},{"id":"SU143","n":"Frozen mixed vegetables 1kg","c":"Frozen","s":"Vegetables","p":2.99,"t":["vegetarian","vegan"],"pr":2.0},{"id":"SU144","n":"Frozen chopped spinach 1kg","c":"Frozen","s":"Vegetables","p":2.19,"t":["vegetarian","vegan"],"pr":2.9},{"id":"SU145","n":"Frozen peas 1kg","c":"Frozen","s":"Vegetables","p":2.49,"t":["vegetarian","vegan"],"pr":5.0},{"id":"SU146","n":"Frozen stir-fry vegetables 750g","c":"Frozen","s":"Vegetables","p":2.79,"t":["vegetarian","vegan"],"pr":2.0},{"id":"SU147","n":"Frozen broccoli 1kg","c":"Frozen","s":"Vegetables","p":1.99,"t":["vegetarian","vegan"],"pr":2.8},{"id":"SU148","n":"Oven chips 1kg","c":"Frozen","s":"Potatoes","p":2.19,"t":["vegetarian","vegan"],"pr":2.5},{"id":"SU149","n":"Oven chips 2.5kg (value pack)","c":"Frozen","s":"Potatoes","p":3.49,"t":["vegetarian","vegan"],"pr":2.5},{"id":"SU150","n":"Frozen sautéed potatoes 750g","c":"Frozen","s":"Potatoes","p":2.49,"t":["vegetarian","vegan"],"pr":2.4},{"id":"SU151","n":"Margherita pizza 400g","c":"Frozen","s":"Pizza","p":2.49,"t":["vegetarian"],"pr":10.0},{"id":"SU152","n":"Ham and cheese pizza 400g","c":"Frozen","s":"Pizza","p":2.99,"t":[],"pr":11.0},{"id":"SU153","n":"Vanilla ice cream 1L","c":"Frozen","s":"Desserts","p":2.99,"t":["vegetarian"],"pr":4.0},{"id":"SU154","n":"Beef lasagne 1kg","c":"Ready Meals","s":"Ready Meals","p":4.49,"t":[],"pr":8.0},{"id":"SU155","n":"Caesar salad 250g","c":"Ready Meals","s":"Ready Meals","p":3.29,"t":[],"pr":9.0},{"id":"SU156","n":"Cottage pie 800g","c":"Ready Meals","s":"Ready Meals","p":4.29,"t":[],"pr":7.0},{"id":"SU157","n":"Tabbouleh 500g","c":"Ready Meals","s":"Ready Meals","p":2.49,"t":["vegetarian","vegan"],"pr":4.0},{"id":"SU158","n":"Vegetable curry 350g","c":"Ready Meals","s":"Ready Meals","p":3.49,"t":["vegetarian","vegan"],"pr":4.0},{"id":"SU159","n":"Quiche lorraine 400g","c":"Ready Meals","s":"Ready Meals","p":3.19,"t":[],"pr":9.0},{"id":"SU160","n":"Ready salted crisps 200g","c":"Snacks","s":"Snacks","p":1.29,"t":["vegetarian","vegan"],"pr":6.0},{"id":"SU161","n":"Butter biscuits 200g","c":"Snacks","s":"Snacks","p":0.99,"t":["vegetarian"],"pr":7.0},{"id":"SU162","n":"Cereal bars x6","c":"Snacks","s":"Snacks","p":1.79,"t":["vegetarian"],"pr":6.0},{"id":"SU163","n":"Dark chocolate 70% 100g","c":"Snacks","s":"Snacks","p":1.29,"t":["vegetarian","vegan"],"pr":9.0},{"id":"SU164","n":"Apple compote pouches x8","c":"Snacks","s":"Snacks","p":2.19,"t":["vegetarian","vegan"],"pr":0.3},{"id":"SU165","n":"Crackers 250g","c":"Snacks","s":"Snacks","p":1.39,"t":["vegetarian"],"pr":9.0},{"id":"SU166","n":"Biscuits 500g (value pack)","c":"Snacks","s":"Snacks","p":1.49,"t":["vegetarian"],"pr":6.0},{"id":"SU167","n":"Spring water 6x1.5L","c":"Beverages","s":"Water","p":1.99,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU168","n":"Sparkling water 6x1L","c":"Beverages","s":"Water","p":2.29,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU169","n":"Spring water 6x1.5L (value pack)","c":"Beverages","s":"Water","p":1.29,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU170","n":"Orange juice 1L","c":"Beverages","s":"Juice","p":1.69,"t":["vegetarian","vegan"],"pr":0.7},{"id":"SU171","n":"Organic apple juice 1L","c":"Beverages","s":"Juice","p":1.89,"t":["vegetarian","vegan","bio"],"pr":0.1},{"id":"SU172","n":"Multifruit juice 1L","c":"Beverages","s":"Juice","p":1.79,"t":["vegetarian","vegan"],"pr":0.5},{"id":"SU173","n":"Cola 1.5L","c":"Beverages","s":"Soft Drinks","p":1.19,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU174","n":"Peach iced tea 1.5L","c":"Beverages","s":"Soft Drinks","p":1.29,"t":["vegetarian","vegan"],"pr":0.0},{"id":"SU175","n":"Oat drink 1L","c":"Beverages","s":"Plant Drinks","p":1.49,"t":["vegetarian","vegan"],"pr":1.0},{"id":"SU176","n":"Organic soy drink 1L","c":"Beverages","s":"Plant Drinks","p":1.69,"t":["vegetarian","vegan","high protein","bio"],"pr":3.3},{"id":"SU186","n":"Leeks 1kg","c":"Fruits & Vegetables","s":"Vegetables","p":1.99,"t":["vegetarian","vegan"],"pr":1.5},{"id":"SU187","n":"Fresh green beans 500g","c":"Fruits & Vegetables","s":"Vegetables","p":2.49,"t":["vegetarian","vegan"],"pr":1.8},{"id":"SU188","n":"Cooked beetroot 500g","c":"Fruits & Vegetables","s":"Vegetables","p":1.29,"t":["vegetarian","vegan"],"pr":1.6},{"id":"SU189","n":"Mango","c":"Fruits & Vegetables","s":"Fruits","p":1.49,"t":["vegetarian","vegan"],"pr":0.8},{"id":"SU190","n":"Pineapple","c":"Fruits & Vegetables","s":"Fruits","p":1.99,"t":["vegetarian","vegan"],"pr":0.5},{"id":"SU191","n":"Petits suisses x12","c":"Dairy & Eggs","s":"Yogurt","p":1.69,"t":["vegetarian"],"pr":7.0},{"id":"SU192","n":"Chocolate puddings x4","c":"Dairy & Eggs","s":"Yogurt","p":1.29,"t":["vegetarian"],"pr":3.0},{"id":"SU193","n":"Raclette cheese 400g","c":"Dairy & Eggs","s":"Cheese","p":4.99,"t":["vegetarian"],"pr":23.0},{"id":"SU194","n":"Sliced turkey breast x4","c":"Meat & Fish","s":"Poultry","p":2.19,"t":["high protein"],"pr":21.0},{"id":"SU195","n":"Trout fillets x2","c":"Meat & Fish","s":"Fish","p":5.99,"t":["high protein"],"pr":20.0},{"id":"SU196","n":"Chicken salad wraps x2","c":"Ready Meals","s":"Ready Meals","p":3.99,"t":[],"pr":10.0},{"id":"SU197","n":"Potato gratin 800g","c":"Ready Meals","s":"Ready Meals","p":3.79,"t":["vegetarian"],"pr":3.0},{"id":"SU198","n":"Mixed nuts and dried fruit 200g","c":"Snacks","s":"Snacks","p":2.99,"t":["vegetarian","vegan","high protein"],"pr":15.0},{"id":"SU199","n":"Sweet popcorn 100g","c":"Snacks","s":"Snacks","p":1.19,"t":["vegetarian"],"pr":8.0},{"id":"SU200","n":"Green tea x25","c":"Beverages","s":"Coffee & Tea","p":1.59,"t":["vegetarian","vegan"],"pr":0.0}];
+
+// ---------- state ----------
+const S = { mode: "week", people: 2, days: 7, budget: 60, diet: new Set(), skip: "", seed: 0 };
+try { const saved = JSON.parse(localStorage.getItem("little-basket") || "null");
+  if (saved) { Object.assign(S, saved, { diet: new Set(saved.diet || []), seed: 0 }); } } catch (e) {}
+const save = () => { try { localStorage.setItem("little-basket", JSON.stringify({ ...S, diet: [...S.diet] })); } catch (e) {} };
+
+// ---------- rules ----------
+const lower = s => s.toLowerCase();
+const has = (n, words) => words.some(w => n.includes(w));
+const GLUTEN = ["pasta", "spaghetti", "penne", "macaroni", "tagliatelle", "bread", "baguette", "loaf", "couscous", "semolina",
+  "bulgur", "seitan", "oats", "muesli", "cornflakes", "wraps", "pizza", "nuggets", "lasagne", "quiche", "egg noodles",
+  "crispbread", "brioche", "croissant", "flour", "biscuit", "crackers", "cereal bars", "soy sauce", "cottage pie", "tabbouleh", "caesar"];
+const DAIRY_SUBS = ["Cheese", "Milk", "Yogurt", "Butter & Cream"];
+const DAIRY = ["cheese", "pizza", "lasagne", "caesar", "quiche", "gratin", "cottage pie", "croissant", "brioche", "ice cream",
+  "pudding", "petits suisses", "chocolate spread", "butter biscuits", "crème"];
+const NUTS = [/\bnuts?\b/, /peanut/, /almond/, /pesto/, /muesli/, /cereal bars/];
+const PORK = ["ham", "bacon", "sausage", "lardons", "pork", "quiche lorraine"];
+
+function allowed(it) {
+  const n = lower(it.n), d = S.diet;
+  if (d.has("vegan") && !it.t.includes("vegan")) return false;
+  if (d.has("vegetarian") && !it.t.includes("vegetarian")) return false;
+  if (d.has("pescatarian")) {
+    if (it.c === "Meat & Fish" && !["Fish", "Seafood"].includes(it.s)) return false;
+    if ((it.c === "Ready Meals" || it.s === "Pizza") && !it.t.includes("vegetarian") && !n.includes("tuna")) return false;
+  }
+  if (d.has("gluten") && !n.includes("gluten-free") && !n.includes("rice noodles") && has(n, GLUTEN)) return false;
+  if (d.has("dairy") && (DAIRY_SUBS.includes(it.s) || has(n, DAIRY))) return false;
+  if (d.has("nuts") && NUTS.some(r => r.test(n))) return false;
+  if (d.has("pork") && (it.s === "Pork" || has(n, PORK))) return false;
+  const skips = S.skip.split(/[,;]/).map(w => lower(w.trim()).replace(/(es|s)$/, "")).filter(w => w.length > 2);
+  if (skips.some(w => n.includes(w))) return false;
+  return true;
+}
+
+function role(it) {
+  const { c, s } = it;
+  if (has(lower(it.n), ["flour", "sugar", "stock cubes", "semolina", "lemons"])) return "other";   // baking staples: not auto-added
+  if (c === "Fruits & Vegetables") return "produce";
+  if (c === "Meat & Fish") return "animal_protein";
+  if (c === "Dairy & Eggs" && s === "Eggs") return "animal_protein";
+  if (c === "Plant Protein") return "plant_protein";
+  if (c === "Dairy & Eggs") return "dairy";
+  if (c === "Pantry" && ["Pasta", "Rice", "Grains", "Noodles", "Breakfast"].includes(s)) return "carbs";
+  if (c === "Bakery" || (c === "Frozen" && s === "Potatoes")) return "carbs";
+  if (c === "Pantry") return "pantry";
+  if (c === "Frozen" && s === "Vegetables") return "frozen";
+  if (c === "Frozen" || c === "Ready Meals") return "ready";
+  if (c === "Snacks") return "snacks";
+  if (c === "Beverages") return "drinks";
+  return "other";
+}
+
+// picnic: only things you can eat outdoors without cooking
+function picnicRole(it) {
+  const n = lower(it.n), { c, s } = it;
+  if (s === "Fruits" && !has(n, ["lemon", "juicing", "pineapple"])) return "fruit";
+  if (s === "Vegetables" && c === "Fruits & Vegetables" && has(n, ["tomato", "cucumber", "grated carrot", "mixed salad", "beetroot"])) return "crunch";
+  if (c === "Bakery" && !has(n, ["crispbread", "brioche"])) return "bread";
+  if (s === "Cheese" && !has(n, ["grated", "raclette", "parmesan"])) return "cheese";
+  if (has(n, ["cooked ham", "sliced turkey", "smoked salmon", "cooked prawns", "tabbouleh", "caesar", "quiche", "chicken salad wraps", "smoked tofu"])) return "deli";
+  if (c === "Snacks") return "snacks";
+  if (["Water", "Juice", "Soft Drinks"].includes(s)) return "drinks";
+  return null;
+}
+
+const SHARES = {
+  week: { produce: .20, animal_protein: .17, plant_protein: .10, dairy: .12, carbs: .16, pantry: .07, frozen: .04, ready: .04, snacks: .05, drinks: .05 },
+  picnic: { fruit: .18, crunch: .10, bread: .16, cheese: .14, deli: .16, snacks: .12, drinks: .14 },
+};
+
+// sensible order inside a group: water and juice before fizzy drinks
+const DEPRIORITISE = { "Soft Drinks": 1.8, "Coffee & Tea": 1.5, "Pastries": 1.3, "Desserts": 1.4 };
+
+// small seeded random, so "Shuffle" gives a new but repeatable list
+function rng(seed) { let x = seed * 9301 + 49297; return () => ((x = (x * 9301 + 49297) % 233280) / 233280); }
+
+function ordered(pool, roleName, roleFn) {
+  const r = rng(S.seed + roleName.length * 7);
+  let sub = pool.filter(it => roleFn(it) === roleName).map(it => ({ it, k: it.p * (1 + (S.seed ? r() * .9 : 0)) * (DEPRIORITISE[it.s] || 1) }));
+  if (S.diet.has("protein") && /protein|deli|cheese/.test(roleName)) sub.forEach(o => o.k = -o.it.pr / o.it.p);
+  sub.sort((a, b) => a.k - b.k);
+  const groups = {}; sub.forEach(o => (groups[o.it.s] ||= []).push(o.it));   // variety: one of each subcategory in turn
+  const g = Object.values(groups), out = [];
+  for (let i = 0; g.some(x => x.length > i); i++) g.forEach(x => x[i] && out.push(x[i]));
+  return out;
+}
+
+function buildBasket() {
+  const isPicnic = S.mode === "picnic", roleFn = isPicnic ? picnicRole : role;
+  const pool = CATALOGUE.filter(it => roleFn(it) && allowed(it));
+  if (!pool.length) return null;
+  let share = { ...SHARES[isPicnic ? "picnic" : "week"] };
+  if (S.diet.has("protein") && !isPicnic) { ["snacks", "ready", "drinks"].forEach(k => share[k] *= .4); share.plant_protein += .05; share.animal_protein += .05; }
+  for (const k in share) if (!pool.some(it => roleFn(it) === k)) delete share[k];      // e.g. no meat for vegetarians
+  const tot = Object.values(share).reduce((a, b) => a + b, 0);
+  for (const k in share) share[k] /= tot;
+
+  const scale = isPicnic ? Math.max(1, S.people / 3) : Math.max(1, S.people * S.days / 7);
+  const cap = k => Math.max(1, Math.ceil(scale * (k === "produce" || k === "fruit" ? 1.5 : 1)));
+  const basket = new Map(); let spent = 0;
+  const add = it => { basket.set(it.id, { it, q: (basket.get(it.id)?.q || 0) + 1 }); spent += it.p; };
+  const roles = Object.keys(share).sort((a, b) => share[b] - share[a]);
+  const lists = Object.fromEntries(roles.map(k => [k, ordered(pool, k, roleFn)]));
+
+  for (const k of roles) {
+    let rs = 0; const rb = S.budget * share[k];
+    for (let p = 1; p <= cap(k); p++) for (const it of lists[k]) {
+      if ((basket.get(it.id)?.q || 0) >= p) continue;
+      if (rs + it.p <= rb && spent + it.p <= S.budget) { add(it); rs += it.p; }
+    }
+  }
+  const minP = Math.min(...pool.map(i => i.p));
+  for (let n = 0; n < 300 && S.budget - spent >= minP && spent < .985 * S.budget; n++) {     // use the rest, least-filled first
+    const used = Object.fromEntries(roles.map(k => [k, 0]));
+    basket.forEach(({ it, q }) => { const k = roleFn(it); if (k in used) used[k] += it.p * q; });
+    let added = false;
+    for (const k of roles.sort((a, b) => used[a] / share[a] - used[b] / share[b])) {
+      const it = lists[k].find(it => (basket.get(it.id)?.q || 0) < cap(k) * 2 + 1 && it.p <= S.budget - spent);
+      if (it) { add(it); added = true; break; }
+    }
+    if (!added) break;
+  }
+  return { items: [...basket.values()], total: spent };
+}
+
+// ---------- dinner ideas ----------
+const COOKED = ["Vegetables", "courgette|broccoli|pepper|mushroom|spinach|cauliflower|aubergine|carrot|mixed vegetables|stir-fry|peas|green beans|leek", ""];
+const SALAD = ["Vegetables", "lettuce|salad|tomato|cucumber|grated carrot", ""];
+const TOMATO = ["Canned Vegetables|Sauces", "tomato|passata|ratatouille", ""];
+const MEALS = [
+  ["Chicken, rice and veg", [["Poultry", "chicken breast|chicken strips|chicken thigh", ""], ["Rice", "", ""], COOKED]],
+  ["Spaghetti bolognese", [["Beef", "minced beef|burgers", ""], ["Pasta", "spaghetti", ""], TOMATO]],
+  ["Salmon with quinoa and greens", [["Fish", "salmon fillets", ""], ["Grains", "quinoa", ""], COOKED]],
+  ["Prawn noodle stir-fry", [["Seafood", "prawns", ""], ["Noodles", "", ""], COOKED]],
+  ["Tuna tomato pasta", [["Canned Fish", "tuna", ""], ["Pasta", "", "wholewheat"], TOMATO]],
+  ["Turkey, oven chips and salad", [["Poultry", "turkey escalopes", ""], ["Potatoes", "oven chips", ""], SALAD]],
+  ["Fish with couscous and veg", [["Fish", "pollock|cod", ""], ["Grains", "couscous", ""], COOKED]],
+  ["Tofu stir-fry with rice", [["Tofu", "tofu", "curry"], ["Rice", "", ""], COOKED]],
+  ["Chickpea coconut curry", [["Legumes", "chickpeas", ""], ["Rice", "", ""], COOKED, ["Cooking", "coconut", ""]]],
+  ["Veggie burger pasta with tomato sauce", [["Meat Alternatives", "veggie burgers|plant-based mince", ""], ["Pasta", "", "wholewheat"], TOMATO]],
+  ["Omelette, salad and fresh bread", [["Eggs", "", ""], ["Bread", "baguette|bread|loaf", ""], SALAD]],
+  ["Lentil and quinoa bowl", [["Legumes", "lentils", "ready-cooked"], ["Grains", "quinoa", ""], COOKED]],
+];
+
+function buildMeals() {
+  const pool = CATALOGUE.filter(allowed), packs = Math.max(1, Math.ceil(S.people / 2));
+  const built = [];
+  for (const [mi, [title, slots]] of MEALS.entries()) {
+    const used = new Set(), items = []; let ok = true;
+    slots.forEach(([subs, inc, exc], i) => {
+      let d = pool.filter(it => subs.split("|").includes(it.s) && !used.has(it.id));
+      if (inc) d = d.filter(it => inc.split("|").some(w => lower(it.n).includes(w)));
+      if (exc) d = d.filter(it => !exc.split("|").some(w => lower(it.n).includes(w)));
+      d.sort((a, b) => S.diet.has("protein") ? b.pr / b.p - a.pr / a.p : a.p - b.p);
+      if (!d.length) { if (i < 2) ok = false; return; }
+      const pick = i < 2 ? d[0] : d[(mi + S.seed) % d.length];     // vary the vegetables between meals
+      used.add(pick.id); items.push({ it: pick, q: packs });
+    });
+    if (ok) built.push({ title, items, total: items.reduce((a, b) => a + b.it.p * b.q, 0) });
+  }
+  let fit = built.filter(m => m.total <= S.budget);
+  const list = (fit.length ? fit : built);
+  const k = S.seed % Math.max(1, list.length);
+  return list.slice(k).concat(list.slice(0, k)).slice(0, 3);
+}
+
+// ---------- render ----------
+const AISLES = ["Fruits & Vegetables", "Bakery", "Dairy & Eggs", "Meat & Fish", "Plant Protein", "Pantry", "Frozen", "Ready Meals", "Snacks", "Beverages"];
+const AISLE_NAME = { "Fruits & Vegetables": "Fruit & veg", "Bakery": "Bakery", "Dairy & Eggs": "Dairy & eggs", "Meat & Fish": "Meat & fish",
+  "Plant Protein": "Plant protein", "Pantry": "Cupboard", "Frozen": "Freezer", "Ready Meals": "Ready to eat", "Snacks": "Snacks & treats", "Beverages": "Drinks" };
+const eur = v => "€" + v.toFixed(2);
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let lastText = "";
+
+function itemRows(items, prefix) {
+  return items.map(({ it, q }, i) => `<li><input type="checkbox" id="${prefix}${i}"><label for="${prefix}${i}"><span class="q">${q}×</span>${esc(it.n)}</label><span class="price">${eur(it.p * q)}</span></li>`).join("");
+}
+
+function dietNote() {
+  const n = ["Prices are examples from a sample supermarket price list. Your shop's prices will differ."];
+  if (["gluten", "dairy", "nuts"].some(d => S.diet.has(d))) n.push("Allergy filters work on product names, so always check the label.");
+  return n;
+}
+
+const ACTIONS = `<div class="actions"><button type="button" class="primary" data-act="edit">Change my answers</button>
+  <button type="button" data-act="cheaper">Make it cheaper</button><button type="button" data-act="shuffle">Shuffle it up</button>
+  <button type="button" data-act="copy">Copy list</button></div>`;
+
+function render() {
+  const pad = document.getElementById("pad");
+  const who = `${S.people} ${S.people === 1 ? "person" : "people"}`;
+  if (S.mode === "meals") {
+    const meals = buildMeals();
+    if (!meals.length) { pad.innerHTML = `<h2>Hmm…</h2><p class="empty">I couldn't find a dinner with those food needs. Try removing one.</p>${ACTIONS}`; lastText = ""; bindActions(); return; }
+    pad.innerHTML = `<div class="pad-head"><div><h2>Dinner ideas</h2><p class="meta">for ${who} · up to ${eur(S.budget)}</p></div></div>${ACTIONS}
+      <div class="meals">${meals.map((m, j) => `<article class="meal"><h3>${esc(m.title)}</h3><ul class="items">${itemRows(m.items, "m" + j + "_")}</ul>
+      <div class="tot"><span>Total</span><span>${eur(m.total)}${m.total > S.budget ? " · over budget" : ""}</span></div></article>`).join("")}</div>
+      <div class="notes">${["One pack is assumed to feed about 2 people.", ...dietNote()].map(t => `<span>${t}</span>`).join("")}</div>`;
+    lastText = meals.map(m => `${m.title} (${eur(m.total)})\n` + m.items.map(({ it, q }) => `- ${q} x ${it.n}`).join("\n")).join("\n\n");
+  } else {
+    const res = buildBasket();
+    if (!res || !res.items.length) { pad.innerHTML = `<h2>Hmm…</h2><p class="empty">Nothing fits those food needs and that budget. Try a bigger budget or fewer filters.</p>${ACTIONS}`; lastText = ""; bindActions(); return; }
+    const groups = {}; res.items.forEach(x => (groups[x.it.c] ||= []).push(x));
+    const pct = Math.min(100, res.total / S.budget * 100), count = res.items.reduce((a, b) => a + b.q, 0);
+    const title = S.mode === "picnic" ? "Picnic basket" : "Shopping list";
+    const meta = S.mode === "picnic" ? `for ${who} · one sunny afternoon` : `for ${who} · ${S.days} ${S.days === 1 ? "day" : "days"}`;
+    pad.innerHTML = `<div class="pad-head"><div><h2>${title}</h2><p class="meta">${meta}</p></div></div>${ACTIONS}
+      <div class="jar"><div class="jar-bar"><i style="width:${pct}%"></i></div>
+      <div class="jar-txt"><span><b>${eur(res.total)}</b> of ${eur(S.budget)}</span><span>${count} items · <b>${eur(S.budget - res.total)}</b> left</span></div></div>
+      ${AISLES.filter(a => groups[a]).map(a => `<div class="aisle">${AISLE_NAME[a]}</div><ul class="items">${itemRows(groups[a].sort((x, y) => x.it.s.localeCompare(y.it.s)), "i" + AISLES.indexOf(a) + "_")}</ul>`).join("")}
+      <div class="notes">${(res.total < .9 * S.budget ? ["That's plenty for this many people, so I stopped before spending the whole budget."] : []).concat(dietNote()).map(t => `<span>${t}</span>`).join("")}</div>`;
+    lastText = `${title} (${meta})\n` + AISLES.filter(a => groups[a]).map(a => `\n${AISLE_NAME[a]}\n` + groups[a].map(({ it, q }) => `- ${q} x ${it.n}`).join("\n")).join("\n") + `\n\nTotal: ${eur(res.total)}`;
+  }
+  pad.querySelectorAll(".items input").forEach(cb => cb.addEventListener("change", () => cb.closest("li").classList.toggle("done", cb.checked)));
+  bindActions();
+}
+
+function bindActions() {
+  document.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => {
+    const a = b.dataset.act;
+    if (a === "edit") showForm();
+    if (a === "cheaper") { S.budget = Math.max(5, Math.round(S.budget * .85)); save(); syncUI(); render(); toast("Trimmed the budget by 15%"); }
+    if (a === "shuffle") { S.seed += 1; render(); }
+    if (a === "copy") copyList();
+  }));
+}
+
+function toast(msg) { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(t._h); t._h = setTimeout(() => t.hidden = true, 1800); }
+function copyList() {
+  navigator.clipboard?.writeText(lastText).then(() => toast("List copied"), fallback) ?? fallback();
+  function fallback() { const ta = document.createElement("textarea"); ta.value = lastText; document.body.append(ta); ta.select();
+    try { document.execCommand("copy"); toast("List copied"); } catch (e) { toast("Select the list to copy it"); } ta.remove(); }
+}
+
+// ---------- controls ----------
+function syncUI() {
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
+  document.getElementById("days-f").hidden = S.mode !== "week";
+  document.getElementById("people").textContent = S.people;
+  document.getElementById("days").textContent = S.days;
+  document.getElementById("budget").value = S.budget;
+  document.getElementById("budget-o").textContent = "€" + Math.round(S.budget);
+  document.getElementById("skip").value = S.skip;
+  document.querySelectorAll("#diets button").forEach(b => b.setAttribute("aria-pressed", S.diet.has(b.dataset.d)));
+  const per = S.mode === "week" ? S.budget / (S.people * S.days) : S.budget / S.people;
+  document.getElementById("budget-hint").textContent = S.mode === "week"
+    ? `about €${per.toFixed(2)} per person per day` : `about €${per.toFixed(2)} per person`;
+}
+
+// page 1: preferences; page 2: the list
+const listShown = () => !document.getElementById("pad").hidden;
+function update() { save(); syncUI(); if (listShown()) render(); }
+function showForm() {
+  document.getElementById("pad").hidden = true; document.getElementById("form").hidden = false;
+  syncUI(); window.scrollTo({ top: 0 });
+}
+function showList() {
+  S.skip = document.getElementById("skip").value; S.seed = 0; save();
+  document.getElementById("form").hidden = true; document.getElementById("pad").hidden = false;
+  render(); window.scrollTo({ top: 0 });
+}
+document.getElementById("form").addEventListener("submit", e => { e.preventDefault(); showList(); });
+
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  S.mode = b.dataset.mode;
+  if (S.mode === "week" && S.budget < 40) S.budget = Math.min(250, 30 * S.people);
+  if (S.mode === "picnic") S.budget = Math.min(S.budget, 15 * S.people + 10);
+  if (S.mode === "meals") S.budget = Math.min(S.budget, 25);
+  S.seed = 0; update();
+}));
+document.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => {
+  const k = b.dataset.step, lim = k === "people" ? [1, 12] : [1, 14];
+  S[k] = Math.min(lim[1], Math.max(lim[0], S[k] + Number(b.dataset.d))); update();
+}));
+document.getElementById("budget").addEventListener("input", e => { S.budget = Number(e.target.value); update(); });
+document.getElementById("skip").addEventListener("input", e => { S.skip = e.target.value; save(); });
+document.querySelectorAll("#diets button").forEach(b => b.addEventListener("click", () => {
+  const d = b.dataset.d; S.diet.has(d) ? S.diet.delete(d) : S.diet.add(d);
+  if (d === "vegan" && S.diet.has("vegan")) S.diet.add("vegetarian");
+  update();
+}));
+
+update();
+</script>
+
+</body>
+</html>
